@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; worker-src 'self' blob:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self';"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="./favicon.svg"><title>Our Notes · 配队与收益</title>  <script type="module" crossorigin src="./assets/index-oZCGFnye.js"></script>
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; worker-src 'self' blob:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self';"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="./favicon.svg"><title>Our Notes · 配队与收益</title>  <script type="module" crossorigin src="./assets/index-B8z5bXzA.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CrPp6tWU.css">
 </head>
 <body>
 <div class="shell">
- <header class="header"><div><div class="eyebrow">OUR NOTES / BROWSER PLANNER</div><h1>把每一场，算得更清楚<span class="star">✦</span></h1><p>个人卡库 · 两套队伍 · 完整收益 · 前三首乐曲</p></div><div class="local-chip"><span class="dot"></span>浏览器计算 <span id="version">v0.2.4</span></div></header>
+ <header class="header"><div><div class="eyebrow">OUR NOTES / BROWSER PLANNER</div><h1>把每一场，算得更清楚<span class="star">✦</span></h1><p>个人卡库 · 两套队伍 · 完整收益 · 前三首乐曲</p></div><div class="local-chip"><span class="dot"></span>浏览器计算 <span id="version">v0.2.5</span></div></header>
  <div id="browserLoading" class="notice" role="status" aria-live="polite">正在准备浏览器计算组件，首次打开需要下载，请稍候…</div>
  <div id="loadError" class="notice error" hidden></div>
  <section class="profilebar"><div><strong id="profileName">正在加载…</strong><span id="profileBadge" class="badge">个人卡库</span><div id="profileHint" class="muted">个人数据保存在这个浏览器，也可以导出备份。</div></div><div class="actions"><button id="demo" class="secondary">使用截图示例</button><button id="new" class="secondary">新建个人卡库</button><label class="button secondary" for="import">导入卡库<input id="import" type="file" accept=".json,application/json" hidden></label><button id="export" class="secondary">导出卡库</button></div></section>
@@ -47,16 +47,16 @@
  <dialog id="cardPreview" class="card-preview" aria-labelledby="previewTitle"><div class="preview-head"><h2 id="previewTitle"></h2><button id="closeCardPreview" class="secondary" aria-label="关闭卡图预览">关闭</button></div><div id="previewArt"></div><p id="previewMeta" class="muted"></p><button id="previewAdd" class="primary"></button></dialog>
  <section id="evidence" class="tab-page" hidden><div class="panel"><div class="section-kicker">实机记录 / 模型估算</div><h2>哪些已经核对，哪些还在估算</h2><div id="evidenceContent"></div><div class="divider"></div><h3>当前版本的范围</h3><ul class="explanation"><li>支持活动 1「アイの奔流 AtoZ」，普通自由演出与挑战使用独立队伍、乐曲和难度。</li><li>共 85 首普通乐曲、340 张已转换谱面；挑战仅从本活动的 3 首歌中选择。前三名按不同歌曲计，同曲多个难度只保留最好方案，平手会标明。</li><li>手动参考要求原始 AP、无辅助、撃奏关闭；逐帧实机回放未验证。部分复杂 Live / Snap 技能暂未覆盖，遇到时停止并说明，不忽略技能。</li><li>跳过得分按 bdon 所链接的参考模型计算，尚无本地实机跳过结算校准；预算不包含跳过券或时间，请保证实际可执行。</li><li>候选池需至少 5 位不同角色和 5 张不同 Snap。不设候选数量上限，精确搜索合并等价绑定；大卡池可能耗时很长。成员队伍和谱面进度保存在本机，可取消后继续，全部完成后才发布最优方案与前三名；更改预算和已有 CP 可复用。</li><li>个人资料保存在当前浏览器本地。首次运行和计算均无需登录；程序不会读取游戏账号。切换浏览器、清理站点数据前请导出卡库。</li></ul><div id="sourceLinks" class="source-links"></div></div></section>
  <section id="software" class="tab-page" hidden><div class="panel">
-<div class="section-kicker">无需安装 / 浏览器计算</div><h2>Our Notes 配队网页版 v0.1.1</h2>
+<div class="section-kicker">无需安装 / 浏览器计算</div><h2>Our Notes 配队网页版 v0.1.2</h2>
 <p>计算在你自己的设备上运行，无需登录或安装程序。个人卡库保存在当前浏览器，计算输入不会上传到计算服务器。</p>
 <p>可以导入本地版导出的卡库。换设备、换浏览器或清理网站数据之前，请先导出卡库。</p>
 <p>计算时请保持页面打开。手机切到后台或关闭页面可能中断；已保存的完整步骤可在下次继续。</p>
-<p>当前沿用本地版 v0.2.4 的公式和 2026-10-01 数据，只支持对应活动、普通单人自由演出及撃奏关闭的计算范围。</p>
+<p>当前沿用本地版 v0.2.5 的公式和 2026-10-01 数据，只支持对应活动、普通单人自由演出及撃奏关闭的计算范围。</p>
 <p>大卡库的速度和可用内存取决于设备。只有完成完整搜索与最优验证后才展示方案和前三首乐曲。</p>
 <p>网页更新后刷新即可使用；自己的卡库仍保存在同一网址和浏览器。发生加载问题时，可用电脑的近期 Chrome 或 Edge 重新打开。</p>
 <a href="./THIRD-PARTY-NOTICES.txt" target="_blank" rel="noopener">数据与第三方软件说明</a>
 </div></section>
  <section id="progressBox" class="panel progress-box" hidden role="status"><div><strong id="progressTitle">正在计算</strong><span id="progressCount"></span></div><progress id="progressBar" max="1" value="0"></progress><div class="progress-bottom"><span class="tiny muted">计算期间保留输入；取消后不会把未完成结果当作最优。</span><button id="cancel" class="secondary">取消计算</button></div></section>
- <footer>Our Notes 配队网页版 · v0.1.1 · 模型 v0.2.4 · 固定数据快照 2026-10-01 · bdon / Moenotes 优先</footer>
+ <footer>Our Notes 配队网页版 · v0.1.2 · 模型 v0.2.5 · 固定数据快照 2026-10-01 · bdon / Moenotes 优先</footer>
 </div>
 </body></html>

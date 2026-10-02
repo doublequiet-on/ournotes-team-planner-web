@@ -1,8 +1,8 @@
 {
-  "browser_version": "0.1.1",
-  "core_version": "0.2.4",
-  "public_source_sha256": "4e6154e2030bd9c7b4a1049519e0405f67a32fdc71fcef2445f2fcff1d6235e5",
-  "runtime_sha256": "2e8bc58221084b5842e748e5c4263259b19897e2794535ca8e1d570ca9176266",
+  "browser_version": "0.1.2",
+  "core_version": "0.2.5",
+  "public_source_sha256": "396a5b670f8e15f7ce3e5582ca9ed114658d40de801f9d7233351027888ca914",
+  "runtime_sha256": "a88a4eb4c36af8bf10198d40a2ea755071b7cdae23aa4cf02481b59389c93322",
   "python_runtime": "Pyodide 314.0.7",
   "solver": "or-tools-wasm 0.9.1",
   "payload_files": [
@@ -623,7 +623,7 @@
     "licenses/protobufjs-LICENSE.txt": "49d6a1c9a623784c61c6cb70f773f3457faceb1914a13c8560a9823b7631950c",
     "licenses/Pyodide-LICENSE.txt": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5",
     "licenses/source_manifest.json": "8122385e57c61cde89d53f2772c84fbb1f57274a42423443de765e7fb064ea5f",
-    "planner-runtime.zip": "2e8bc58221084b5842e748e5c4263259b19897e2794535ca8e1d570ca9176266",
+    "planner-runtime.zip": "a88a4eb4c36af8bf10198d40a2ea755071b7cdae23aa4cf02481b59389c93322",
     "service-worker.js": "7f00486cd230e58a56f3c2609288811c42344cc18b6aebb40bb14e6010b429fd",
     "THIRD-PARTY-NOTICES.txt": "ff69de836664f5dee3faa37e78124ac3b965792ba78e58c6ba69efb0ad6835c4",
     "vendor/pyodide/pyodide-lock.json": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010",

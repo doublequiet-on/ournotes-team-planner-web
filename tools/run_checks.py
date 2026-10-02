@@ -19,7 +19,7 @@ def run(command):
     subprocess.run(command, cwd=ROOT, env=env, check=True)
 
 
-for name in ("make_fixtures.py", "make_extra_fixtures.py", "make_judgement_fixture.py"):
+for name in ("check_power_modes.py", "make_fixtures.py", "make_extra_fixtures.py", "make_judgement_fixture.py"):
     run([sys.executable, "-B", str(ROOT / "browser/tests" / name), str(dest)])
 preview = subprocess.Popen([sys.executable, "-B", str(ROOT / "browser/tests/preview_server.py"), "--port", str(args.port)],
     cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -32,7 +32,7 @@ try:
         run(["node", str(ROOT / "browser/tests" / name), str(dest)])
     run([sys.executable, "-B", str(ROOT / "browser/tests/check_score_oracles.py"), str(dest)])
     reports = {name: json.loads((dest / f"{name}-report.json").read_text("utf-8"))
-               for name in ("browser", "lifecycle", "int64", "review", "images", "score-oracle")}
+               for name in ("browser", "lifecycle", "int64", "review", "images", "score-oracle", "power-modes")}
     if not all(report["passed"] for report in reports.values()):
         raise RuntimeError("One or more checks failed")
     summary = {"passed": True, "browser_version": json.loads((ROOT / "browser/package.json").read_text("utf-8"))["version"],
@@ -40,6 +40,7 @@ try:
                "browser_checks": reports["browser"]["reports"], "lifecycle_checks": reports["lifecycle"]["reports"],
                "review_checks": reports["review"]["reports"], "image_checks": reports["images"]["reports"],
                "int64": reports["int64"], "score_oracle": reports["score-oracle"],
+               "power_modes": reports["power-modes"],
                "real_mobile_device_verified": False}
     (dest / "validation-summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), "utf-8")
     print("All native/browser checks passed", flush=True)

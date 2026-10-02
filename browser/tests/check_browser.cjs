@@ -48,6 +48,7 @@ function compare(actual, expected) {
     assert.equal(await page.evaluate(()=>crossOriginIsolated),true);
     assert.equal(await page.locator('#loadError').isVisible(),false);
     const bootstrap=await page.evaluate(()=>Planner.request('/api/bootstrap'));
+    assert.equal(bootstrap.catalog.version,require('../upstream.json').version);
     assert.equal(bootstrap.catalog.songs.length,85);
     assert.equal(bootstrap.catalog.members.length,63);
     assert.equal(bootstrap.calibration.power_recomputed,false);
@@ -91,6 +92,9 @@ function compare(actual, expected) {
     reports.push({case:'desktop and mobile-width layout, card thumbnails',passed:true});
     assert.deepEqual(errors,[]);
     const appRequests=requests.filter(request=>request.url.startsWith(new URL(BASE).origin));
+    const runtimes=appRequests.filter(request=>new URL(request.url).pathname.endsWith('/planner-runtime.zip'));
+    assert.ok(runtimes.length>0);
+    assert.ok(runtimes.every(request=>new URL(request.url).searchParams.get('v')===require('../package.json').version));
     assert.ok(appRequests.every(request=>request.method==='GET'));
     assert.ok(appRequests.every(request=>!new URL(request.url).pathname.includes('/api/')));
     assert.ok(blockedInjections.every(request=>request.origin.includes('kaspersky-labs.com')));

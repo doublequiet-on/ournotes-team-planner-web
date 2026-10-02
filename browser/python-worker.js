@@ -1,3 +1,5 @@
+import {version as browserVersion} from './package.json';
+
 let pyodide, cancel, started = 0, lastPersist = 0, lastProgress = {};
 const decoder = new TextDecoder();
 let ready;
@@ -38,7 +40,7 @@ async function initialize({baseURL, stored}) {
   const {loadPyodide} = await import(/* @vite-ignore */ indexURL + 'pyodide.mjs');
   pyodide = await loadPyodide({indexURL});
   self.postMessage({type: 'loading', text: '正在核对游戏数据与公式…'});
-  const response = await fetch(baseURL + 'planner-runtime.zip');
+  const response = await fetch(baseURL + 'planner-runtime.zip?v=' + encodeURIComponent(browserVersion));
   if (!response.ok) throw new Error('计算资料加载失败，请刷新网页。');
   const bytes = new Uint8Array(await response.arrayBuffer());
   pyodide.unpackArchive(bytes, 'zip', {extractDir: '/planner'});
