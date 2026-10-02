@@ -1,0 +1,4 @@
+# Explicit decisions make fresh pnpm 11 installs non-interactive and reproducible.
+allowBuilds:
+  esbuild@0.25.12: true
+  protobufjs: false

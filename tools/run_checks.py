@@ -28,17 +28,18 @@ try:
     if not line.startswith("Static preview:"):
         raise RuntimeError("Static preview did not start: " + preview.stderr.read())
     print(line.strip(), flush=True)
-    for name in ("check_browser.cjs", "check_lifecycle.cjs", "check_int64.cjs", "check_review.cjs"):
+    for name in ("check_browser.cjs", "check_lifecycle.cjs", "check_int64.cjs", "check_review.cjs", "check_images.cjs"):
         run(["node", str(ROOT / "browser/tests" / name), str(dest)])
     run([sys.executable, "-B", str(ROOT / "browser/tests/check_score_oracles.py"), str(dest)])
     reports = {name: json.loads((dest / f"{name}-report.json").read_text("utf-8"))
-               for name in ("browser", "lifecycle", "int64", "review", "score-oracle")}
+               for name in ("browser", "lifecycle", "int64", "review", "images", "score-oracle")}
     if not all(report["passed"] for report in reports.values()):
         raise RuntimeError("One or more checks failed")
     summary = {"passed": True, "browser_version": json.loads((ROOT / "browser/package.json").read_text("utf-8"))["version"],
                "core_version": reports["score-oracle"]["core_version"],
                "browser_checks": reports["browser"]["reports"], "lifecycle_checks": reports["lifecycle"]["reports"],
-               "review_checks": reports["review"]["reports"], "int64": reports["int64"], "score_oracle": reports["score-oracle"],
+               "review_checks": reports["review"]["reports"], "image_checks": reports["images"]["reports"],
+               "int64": reports["int64"], "score_oracle": reports["score-oracle"],
                "real_mobile_device_verified": False}
     (dest / "validation-summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), "utf-8")
     print("All native/browser checks passed", flush=True)

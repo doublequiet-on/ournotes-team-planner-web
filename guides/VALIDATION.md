@@ -26,6 +26,7 @@ Linux/macOS 的原生环境命令是 `.venv/bin/python`。浏览器测试需要�
 | `check_lifecycle.cjs` | 取消不展示部分最优、刷新后卡库与证明保留、恢复复用步骤、四组不同歌曲 Top-3、多标签页计算锁、全 63 成员/64 Snap 跳过卡池 |
 | `check_int64.cjs` | WASM 最优解 `9007199254740997` 不因 JavaScript 精度而舍入 |
 | `check_review.cjs` | 旧标签页覆盖保护、损坏缓存恢复、Worker 退出及时报错和导出保留 |
+| `check_images.cjs` | 模拟卡图临时 503，有限重试后恢复显示 |
 | `check_score_oracles.py` | 浏览器所选队伍的报告得分用原生公式重新计算 |
 | `verify_release.py` | 固定源 SHA-256、源码/网站版本一致、公开资源清单与哈希、完整运行归档、无个人状态路径 |
 | `check_build.py` | 相同源码生成相同运行 ZIP，误放在生成 public 目录的文件不会进入下一次构建 |

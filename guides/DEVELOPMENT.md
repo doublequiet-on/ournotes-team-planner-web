@@ -4,6 +4,8 @@
 
 使用 Git、Python 3.12、Node.js 22 或更新版本。本次在 Windows、Python 3.12 和 Node.js 24 验证。pnpm 固定为 11.19.0，依赖与解析结果保存在 `browser/package.json` 和 `browser/pnpm-lock.yaml`。
 
+`browser/pnpm-workspace.yaml` 明确配置依赖的安装脚本：允许锁定版本 esbuild 的构建检查，跳过无需执行的 Protobuf 安装脚本。全新安装和 CI 无需手动交互批准；保留此文件，避免 pnpm 11 因未配置安装脚本而退出。设置说明见 [pnpm 官方文档](https://pnpm.io/settings/build#allowbuilds)。
+
 从仓库根目录执行：
 
 ```powershell

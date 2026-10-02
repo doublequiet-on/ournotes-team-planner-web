@@ -149,6 +149,17 @@ const profileStore = createProfileStorage(STORE, () => {
     app = replace_once(app, '$(id).disabled = on);', '$(id).disabled = on || profileStore.outOfDate);')
     app = replace_once(app, 'if (jobId || startingJob || updatingSoftware) return;', 'if (jobId || startingJob || updatingSoftware || profileStore.outOfDate) return;')
     app = app.replace("fetch(", "window.plannerFetch(")
+    app = replace_once(app, 'if (e.target.matches?.(".card-art img")) e.target.parentElement.classList.add("image-failed");', '''if (e.target.matches?.(".card-art img")) {
+    const image = e.target, retries = Number(image.dataset.imageRetries || 0);
+    if (retries < 2) {
+      image.dataset.imageRetries = String(retries + 1);
+      setTimeout(() => {
+        if (!image.isConnected) return;
+        const url = new URL(image.src); url.searchParams.set('image_retry', String(retries + 1));
+        image.src = url.href;
+      }, 750 * (retries + 1));
+    } else image.parentElement.classList.add("image-failed");
+  }''')
     app = replace_once(app, '启动时重新运行校准，已通过综合力与两组结算收益检查。新队伍和推荐乐曲仍属于模型估算。',
                        '${calibration.power_recomputed ? "启动时已重新核对综合力与两组收益。" : "已重新核对公共收益公式；综合力展示历史截图校准记录，当前分享包不含原个人养成。"}新队伍和推荐乐曲仍属于模型估算。')
     start = app.index("function softwareMessage(")
