@@ -1,0 +1,10 @@
+.venv/
+work/
+node_modules/
+__pycache__/
+*.pyc
+*.sqlite3
+*.sqlite3-*
+.env
+.env.*
+!.env.example

@@ -1,0 +1,32 @@
+[
+  {
+    "repository": "empty-sekai/ournotes-deck",
+    "commit": "dbd9cf01a4854808dceb6aedcd4041af372faeee",
+    "path": "LICENSE-APACHE",
+    "saved_path": "LICENSE-APACHE",
+    "source_url": "https://raw.githubusercontent.com/empty-sekai/ournotes-deck/dbd9cf01a4854808dceb6aedcd4041af372faeee/LICENSE-APACHE",
+    "git_blob_sha": "22d867b7220cdbd9d74b585ab16473e460f3e9c6",
+    "sha256": "8265d14418aa545cfac59eef500fa87569db10685c6e97d5bd4fe9cb65035862",
+    "bytes": 9890
+  },
+  {
+    "repository": "empty-sekai/ournotes-deck",
+    "commit": "dbd9cf01a4854808dceb6aedcd4041af372faeee",
+    "path": "LICENSE-MIT",
+    "saved_path": "LICENSE-MIT",
+    "source_url": "https://raw.githubusercontent.com/empty-sekai/ournotes-deck/dbd9cf01a4854808dceb6aedcd4041af372faeee/LICENSE-MIT",
+    "git_blob_sha": "4ef67eb459f9248a5619b5cbde6e44c2e1ad620b",
+    "sha256": "800062b775f09596024430618bc5b4614a2a758e55ccb31c5b0e76d7b9685ce7",
+    "bytes": 1087
+  },
+  {
+    "repository": "MetaSekaiLab/nnnotes",
+    "commit": "b1e12c4ab31cfed6cd453e562aeeb66c3821af83",
+    "path": "LICENSE",
+    "saved_path": "LICENSE",
+    "source_url": "https://raw.githubusercontent.com/MetaSekaiLab/nnnotes/b1e12c4ab31cfed6cd453e562aeeb66c3821af83/LICENSE",
+    "git_blob_sha": "f4a5af668cd136e12b1841e9d4f49d5400deb896",
+    "sha256": "ce059fd43b4c321801cd1434d75b386ec43e1b7d8c2028e54013a8119a5adc03",
+    "bytes": 1077
+  }
+]

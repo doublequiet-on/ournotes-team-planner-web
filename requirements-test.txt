@@ -1,0 +1,2 @@
+# Native reference solver used only by developers and CI.
+ortools==9.15.6755

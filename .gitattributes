@@ -1,0 +1,16 @@
+* text=auto eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.cjs text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.zip binary
+*.wasm binary
+*.png binary
+*.webp binary
+# These overrides must follow the extension rules to preserve recorded hashes.
+docs/** -text
+browser/license-source/** -text
+licenses/** -text
+THIRD-PARTY-NOTICES.txt -text

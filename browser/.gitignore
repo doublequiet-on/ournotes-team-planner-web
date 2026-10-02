@@ -1,0 +1,7 @@
+node_modules/
+dist/
+public/
+index.html
+generated-app.js
+style.css
+__pycache__/

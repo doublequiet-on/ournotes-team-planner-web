@@ -1,0 +1,40 @@
+name: Browser validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install locked dependencies
+        working-directory: browser
+        run: npx --yes pnpm@11.19.0 install --frozen-lockfile
+      - name: Build static browser site
+        working-directory: browser
+        run: npx --yes pnpm@11.19.0 build
+      - name: Verify repeatable public generation
+        run: python -B tools/check_build.py
+      - name: Audit generated site
+        run: python -B tools/verify_release.py --site browser/dist
+      - name: Install native reference and Chromium
+        run: |
+          python -m pip install -r requirements-test.txt
+          cd browser
+          npx --yes pnpm@11.19.0 exec playwright install --with-deps chromium
+      - name: Compare native and real browser results
+        run: python -B tools/run_checks.py
