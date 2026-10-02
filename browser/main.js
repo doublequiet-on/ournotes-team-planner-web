@@ -147,6 +147,7 @@ async function start() {
     });
   }
   async function optimize(body) {
+    const triggeredAt = performance.now();
     if (job?.status === 'running') throw new Error('已有一次计算在运行，请等待或先取消。');
     await lockCache();
     try {
@@ -156,7 +157,12 @@ async function start() {
       job = {id: crypto.randomUUID(), status: 'running', stage: '核对实际养成与数据', done: 0, total: 1};
       const id = job.id;
       rpc('optimize', body, {jobId: id, cancel: sharedCancel}).then(async value => {
+        const provenAt = performance.now();
         await persisted;
+        if (value.result) value.result.search.browser_diagnostics = {
+          trigger_to_proof_seconds: (provenAt - triggeredAt) / 1000,
+          final_persistence_wait_seconds: (performance.now() - provenAt) / 1000,
+          trigger_to_available_seconds: (performance.now() - triggeredAt) / 1000};
         Object.assign(job, value, {stage: value.status === 'complete' ? '计算完成' : '计算已取消'});
       }).catch(async error => {
         await persisted;

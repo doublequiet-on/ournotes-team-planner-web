@@ -6,7 +6,7 @@ import sys
 import zipfile
 
 
-def load_baseline(destination):
+def load_baseline(destination, *, optimized=False):
     here = Path(__file__).resolve().parents[1]
     config = json.loads((here / "upstream.json").read_text("utf-8"))
     source = here / "upstream" / config["archive"]
@@ -14,7 +14,7 @@ def load_baseline(destination):
         source = here.parent / config["archive"]
     if hashlib.sha256(source.read_bytes()).hexdigest() != config["sha256"]:
         raise ValueError("Oracle public baseline archive changed")
-    native = Path(destination).resolve() / "native-baseline"
+    native = Path(destination).resolve() / ("optimized-core" if optimized else "native-baseline")
     native.mkdir(parents=True, exist_ok=True)
     prefix = f"OurNotes-配队程序-v{config['version']}/"
     with zipfile.ZipFile(source) as archive:
@@ -26,6 +26,13 @@ def load_baseline(destination):
                 target = native / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(archive.read(info))
+    if optimized:
+        sys.path.insert(0, str(here.parent / "tools"))
+        from optimized_sources import sources
+        for name, raw in sources().items():
+            target = native / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
     sys.path[:0] = [str(native), str(here.parent / "tests")]
     import planner_core as p
     if p.VERSION != config["version"]:

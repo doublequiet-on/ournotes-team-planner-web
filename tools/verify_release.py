@@ -5,6 +5,7 @@ import hashlib
 import json
 import re
 import zipfile
+from optimized_sources import sources
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -38,6 +39,9 @@ def verify(site):
         for name in ("browser_runtime.py", "cp_model.py"):
             if payload.read(name) != (ROOT / "browser" / name).read_bytes():
                 raise ValueError("Runtime contains an outdated browser adapter")
+        for name, raw in sources().items():
+            if (payload.read(name) != raw or info["core_overrides"].get(name) != hashlib.sha256(raw).hexdigest()):
+                raise ValueError(f"Runtime contains an outdated optimized source: {name}")
     if any(word in name for name in files for word in forbidden):
         raise ValueError("Private state path in site")
     if any(p.stat().st_size >= 100 * 1024 * 1024 for p in files.values()):

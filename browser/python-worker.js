@@ -3,6 +3,7 @@ import {version as browserVersion} from './package.json';
 let pyodide, cancel, started = 0, lastPersist = 0, lastProgress = {};
 const decoder = new TextDecoder();
 let ready;
+let persistStats = {snapshots: 0, snapshot_bytes: 0, snapshot_copy_ms: 0};
 
 self.browser_cancelled = () => cancel ? Atomics.load(cancel, 0) !== 0 : false;
 self.browser_progress = raw => {
@@ -14,10 +15,13 @@ self.browser_persist = force => {
   if (!force && now - lastPersist < 500) return;
   lastPersist = now;
   const bytes = pyodide.FS.readFile('/state/search-v1.sqlite3');
+  persistStats.snapshots += 1;
+  persistStats.snapshot_bytes += bytes.byteLength;
+  persistStats.snapshot_copy_ms += performance.now() - now;
   self.postMessage({type: 'persist', bytes: bytes.buffer}, [bytes.buffer]);
 };
-self.browser_solve = raw => {
-  const count = JSON.parse(raw).model.variables.length;
+self.browser_solve = (raw, count) => {
+  if (!Number.isSafeInteger(count) || count < 0) throw new Error('求解模型变量计数无效。');
   const shared = new SharedArrayBuffer(Math.max(1048576, count * 32 + 4096));
   const control = new Int32Array(shared, 0, 2);
   self.postMessage({type: 'solve', raw, shared});
@@ -68,12 +72,17 @@ self.onmessage = async event => {
       return;
     }
     if (message.cancel) cancel = new Int32Array(message.cancel);
-    if (message.method === 'optimize') {started = performance.now(); lastProgress = {};}
+    if (message.method === 'optimize') {
+      started = performance.now(); lastProgress = {};
+      persistStats = {snapshots: 0, snapshot_bytes: 0, snapshot_copy_ms: 0};
+    }
     pyodide.globals.set('_browser_method', message.method);
     pyodide.globals.set('_browser_body', JSON.stringify(message.body || {}));
     pyodide.globals.set('_browser_job_id', message.jobId || null);
     const raw = pyodide.runPython('browser_runtime.invoke(_browser_method, _browser_body, _browser_job_id)');
-    self.postMessage({type: 'reply', id: message.id, value: JSON.parse(raw)});
+    const value = JSON.parse(raw);
+    if (value.result) value.result.search.snapshot_diagnostics = {...persistStats};
+    self.postMessage({type: 'reply', id: message.id, value});
   } catch (error) {
     self.postMessage({type: 'reply', id: message.id, error: error.message});
   }

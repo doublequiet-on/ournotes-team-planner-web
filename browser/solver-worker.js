@@ -36,16 +36,23 @@ self.onmessage = async event => {
   const {raw, shared} = event.data;
   try {
     const types = await loadSchemas();
+    const begin = performance.now();
     const request = JSON.parse(raw);
     const message = types.model.fromObject(request.model);
     const issue = types.model.verify(message);
     if (issue) throw new Error(issue);
     const encoded = types.model.encode(message).finish();
+    const encodedAt = performance.now();
     const validation = await CpSat.validate(encoded);
     if (!validation.ok) throw new Error('CP-SAT 模型校验失败：' + validation.message);
+    const validatedAt = performance.now();
     const bytes = await CpSat.solveRaw(encoded, await encodeParams(request.parameters));
+    const solvedAt = performance.now();
     const response = types.response.toObject(types.response.decode(bytes), {longs: String, enums: Number, defaults: true});
-    finish(shared, {status: response.status, solution: response.solution, solutionInfo: response.solutionInfo});
+    finish(shared, {status: response.status, solution: response.solution, solutionInfo: response.solutionInfo,
+      timings: {model_conversion_ms: encodedAt - begin, validation_ms: validatedAt - encodedAt,
+        solve_ms: solvedAt - validatedAt, response_conversion_ms: performance.now() - solvedAt},
+      model_bytes: encoded.byteLength});
   } catch (error) {
     finish(shared, {error: '浏览器求解失败：' + error.message});
   }

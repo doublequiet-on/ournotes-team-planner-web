@@ -5,6 +5,7 @@ domains travel as decimal strings so JavaScript cannot round 64-bit values.
 """
 from copy import deepcopy
 import json
+import time
 from types import SimpleNamespace
 
 INT_MIN = -(1 << 63)
@@ -25,6 +26,16 @@ class LinearExpr:
         if type(value) in (int, bool):
             return LinearExpr(constant=int(value))
         raise TypeError(f"Unsupported CP-SAT expression: {type(value).__name__}")
+
+    @staticmethod
+    def sum(expressions):
+        terms, constant = {}, 0
+        for value in expressions:
+            expression = LinearExpr.cast(value)
+            constant += expression.constant
+            for index, coefficient in expression.terms.items():
+                terms[index] = terms.get(index, 0) + coefficient
+        return LinearExpr(terms, constant)
 
     def __add__(self, other):
         other = self.cast(other)
@@ -177,10 +188,17 @@ class CpSolver:
     def solve(self, model):
         from js import browser_solve
         import planner_core as p
+        begin = time.perf_counter()
         raw = json.dumps({"model": model.model, "parameters": {
             "numSearchWorkers": self.parameters.num_search_workers,
             "randomSeed": self.parameters.random_seed}}, separators=(",", ":"))
-        response = json.loads(str(browser_solve(raw)))
+        response = json.loads(str(browser_solve(raw, len(model.model["variables"]))))
+        self.diagnostics = {"roundtrip_seconds": time.perf_counter() - begin,
+                            "model_json_bytes": len(raw.encode("utf-8")),
+                            "variables": len(model.model["variables"]),
+                            "constraints": len(model.model["constraints"]),
+                            "worker_timings": response.get("timings", {}),
+                            "protobuf_bytes": response.get("model_bytes", 0)}
         if response.get("cancelled"):
             raise p.Cancelled()
         if response.get("error"):

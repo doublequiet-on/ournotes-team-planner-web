@@ -1,8 +1,19 @@
 {
-  "browser_version": "0.1.2",
+  "browser_version": "0.2.0",
   "core_version": "0.2.5",
+  "optimizer_revision": 1,
+  "core_overrides": {
+    "planner_core.py": "8b8455d70ea904be6a0dfe692375fab154e0fa1d517dd56c2fd104b051c5149c",
+    "solver_search.py": "4f315013b758b1f808d74484a01426f69c5c931aca7e9b8f086cea233b8de2a2",
+    "score_bounds.py": "a978a3ac525a71ab2e476b703574e5694a167bd9b80c9f21aa20238445ad74d3",
+    "score_intervals.py": "0c28fb3e98a92e14cf801e3e253a3b7e469a6a128fcc8c6def315dc3778a4292",
+    "performance_trace.py": "935915b51c8f1555c1c3c0a513ff5c5440361c553e2d1b06d5ac429846d73aa8",
+    "research/manual_score_reference.py": "ee97bfb0afa62825c20355d503bc9f9c6bd02e2b8b38afeb413d50c80f9aac3e",
+    "research/reward_preview.py": "04a6b449390a40fceddf55cdf52d7e68f8daf660a5ee7a0d094ae660d91cf8ae",
+    "research/manual_skill_contract.py": "5a998694b7be78ced62ebc88e357dee1708c17f1f87d5a8f24c940a615c5ea06"
+  },
   "public_source_sha256": "396a5b670f8e15f7ce3e5582ca9ed114658d40de801f9d7233351027888ca914",
-  "runtime_sha256": "a88a4eb4c36af8bf10198d40a2ea755071b7cdae23aa4cf02481b59389c93322",
+  "runtime_sha256": "03aa30c3b67f44ef473128d9d8e94f560309cccbf4f87b2299c1648b21ea8ff0",
   "python_runtime": "Pyodide 314.0.7",
   "solver": "or-tools-wasm 0.9.1",
   "payload_files": [
@@ -478,7 +489,9 @@
     "search_cache.py",
     "solver_search.py",
     "browser_runtime.py",
-    "cp_model.py"
+    "cp_model.py",
+    "score_intervals.py",
+    "performance_trace.py"
   ],
   "private_files_included": false,
   "static_files": {
@@ -623,7 +636,7 @@
     "licenses/protobufjs-LICENSE.txt": "49d6a1c9a623784c61c6cb70f773f3457faceb1914a13c8560a9823b7631950c",
     "licenses/Pyodide-LICENSE.txt": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5",
     "licenses/source_manifest.json": "8122385e57c61cde89d53f2772c84fbb1f57274a42423443de765e7fb064ea5f",
-    "planner-runtime.zip": "a88a4eb4c36af8bf10198d40a2ea755071b7cdae23aa4cf02481b59389c93322",
+    "planner-runtime.zip": "03aa30c3b67f44ef473128d9d8e94f560309cccbf4f87b2299c1648b21ea8ff0",
     "service-worker.js": "7f00486cd230e58a56f3c2609288811c42344cc18b6aebb40bb14e6010b429fd",
     "THIRD-PARTY-NOTICES.txt": "ff69de836664f5dee3faa37e78124ac3b965792ba78e58c6ba69efb0ad6835c4",
     "vendor/pyodide/pyodide-lock.json": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010",

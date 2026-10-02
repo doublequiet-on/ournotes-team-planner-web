@@ -58,7 +58,14 @@ def native_solve(self, cm):
     solver = self.cp.CpSolver()
     solver.parameters.num_search_workers = 1
     solver.parameters.random_seed = 19471
-    status = solver.solve(cm)
+    with self.metrics.measure("solver_bridge"):
+        status = solver.solve(cm)
+    self.metrics.record_solver(self.solve_context, status=int(status), **solver.diagnostics)
+    for name, milliseconds in solver.diagnostics["worker_timings"].items():
+        self.metrics.seconds["wasm_" + name.removesuffix("_ms")] += milliseconds / 1000
+        self.metrics.calls["wasm_" + name.removesuffix("_ms")] += 1
+    for name in ("model_json_bytes", "protobuf_bytes", "variables", "constraints"):
+        self.metrics.count("solver_total_" + name, solver.diagnostics[name])
     self.check()
     self.stats["solver_calls"] += 1
     if status != self.cp.OPTIMAL:

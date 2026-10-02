@@ -46,11 +46,13 @@ python -B tests/preview_server.py
 python -B tools/unpack_model.py
 ```
 
-展开后可阅读 `planner_core.py`、`solver_search.py`、`score_bounds.py`、`search_cache.py`、原界面 `web/` 和公开 `research/`。实际构建始终读取 `upstream.json` 指定的 ZIP；直接修改 `work/model/` 不会自动改变网页。修改公式或基准界面后，需要生成新的公开基准、更新版本与 SHA-256，并完成 [基准升级流程](DATA.md)。
+展开后可阅读固定基准及公开研究数据。v0.2.0 的可编辑优化源码在 `core/`；`tools/optimized_sources.py` 明确列出允许进入运行包的八个文件。构建先校验 `upstream.json` 的 ZIP，再使用这些文件覆盖对应核心，并加入两个新模块。`build-info.json` 记录每个覆盖文件的哈希，发布审计逐字节核对运行包。修改 `work/model/` 不会改变网页。
+
+等价搜索优化修改 `core/` 并运行 `python -B tools/test_core.py`。不可改变原始 `note_score`、`factor_commands`、`ap_factor_samples` 等对照函数来迎合测试。计分公式、活动或基准界面的改变仍需要新的公开基准与完整 [升级流程](DATA.md)。
 
 纯网页改动可以编辑浏览器适配器及 `build_browser.py`。生成器针对固定界面使用唯一匹配检查；基准界面变化时会停止构建，避免静默生成不完整页面。
 
-本项目对公开基准的模式修复另提供可读差异 [0.2.5-power-modes.patch](../model-fixes/0.2.5-power-modes.patch)，方便审查普通/挑战综合力的变化。实际构建仍读取固定 ZIP；差异文件用于说明，不在构建时重复应用。
+本项目对公开基准的模式修复另提供可读差异 [0.2.5-power-modes.patch](../model-fixes/0.2.5-power-modes.patch)，方便审查普通/挑战综合力的变化。实际构建读取固定 ZIP 并应用上述优化层；模式修复差异文件用于说明，不在构建时重复应用。
 
 ## 测试与提交
 

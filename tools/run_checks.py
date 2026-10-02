@@ -19,6 +19,7 @@ def run(command):
     subprocess.run(command, cwd=ROOT, env=env, check=True)
 
 
+run([sys.executable, "-B", str(ROOT / "tools/test_core.py")])
 for name in ("check_power_modes.py", "make_fixtures.py", "make_extra_fixtures.py", "make_judgement_fixture.py"):
     run([sys.executable, "-B", str(ROOT / "browser/tests" / name), str(dest)])
 preview = subprocess.Popen([sys.executable, "-B", str(ROOT / "browser/tests/preview_server.py"), "--port", str(args.port)],

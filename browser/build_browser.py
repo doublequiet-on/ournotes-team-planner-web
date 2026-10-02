@@ -12,9 +12,12 @@ import shutil
 import zipfile
 import argparse
 import subprocess
+import sys
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
+sys.path.insert(0, str(ROOT / "tools"))
+from optimized_sources import sources
 PUBLIC = HERE / "public"
 VERSION = json.loads((HERE / "package.json").read_text("utf-8"))["version"]
 
@@ -50,8 +53,9 @@ def main():
     PUBLIC.mkdir()
     payload = io.BytesIO()
     included = []
+    overrides = sources()
     with zipfile.ZipFile(source) as archive, zipfile.ZipFile(payload, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as runtime:
-        html = archive.read(prefix + "web/index.html").decode("utf-8")
+        html = archive.read(prefix + "web/index.html").decode("utf-8").replace("\r\n", "\n")
         app = archive.read(prefix + "web/app.js").decode("utf-8").replace("\r\n", "\n")
         css = archive.read(prefix + "web/style.css")
         for info in archive.infolist():
@@ -61,7 +65,7 @@ def main():
             if any(word in relative for word in ("player_growth_observations", "party_sample", "challenge_receipt", "private", ".sqlite", "ui-exported")):
                 raise ValueError("Private file in public release")
             if relative in ("planner_core.py", "search_cache.py", "solver_search.py", "score_bounds.py") or relative.startswith("research/"):
-                raw = archive.read(info)
+                raw = overrides.get(relative, archive.read(info))
                 add_runtime(runtime, relative, raw)
                 included.append(relative)
             elif relative.startswith("web/card-images/"):
@@ -75,6 +79,10 @@ def main():
         for name in ("browser_runtime.py", "cp_model.py"):
             add_runtime(runtime, name, (HERE / name).read_bytes())
             included.append(name)
+        for name, raw in overrides.items():
+            if name not in included:
+                add_runtime(runtime, name, raw)
+                included.append(name)
     (PUBLIC / "planner-runtime.zip").write_bytes(payload.getvalue())
     pyodide = HERE / "node_modules/pyodide"
     destination = PUBLIC / "vendor/pyodide"
@@ -119,7 +127,7 @@ def main():
     html = html.replace("卡图已保存在本地", "卡图随网页提供")
     html = html.replace('id="profileBadge" class="badge">截图示例', 'id="profileBadge" class="badge">个人卡库')
     html = replace_once(html, f'Our Notes 配队与收益 · v{core_version}', f'Our Notes 配队网页版 · v{VERSION} · 模型 v{core_version}')
-    (HERE / "index.html").write_text(html, "utf-8")
+    (HERE / "index.html").write_text(html, "utf-8", newline="\n")
     (HERE / "style.css").write_bytes(css)
     app = replace_once(app, 'const STORE = "ournotes-local-planner-v1-profile";', 'const STORE = "ournotes-browser-planner-v1-profile:" + window.Planner.scope;')
     profile_code = '''import {createProfileStorage} from './profile-storage.js';
@@ -171,13 +179,15 @@ const profileStore = createProfileStorage(STORE, () => {
         app = replace_once(app, line, "")
     (HERE / "generated-app.js").write_text(app, "utf-8")
     report = {"browser_version": VERSION, "core_version": core_version,
+              "optimizer_revision": 1,
+              "core_overrides": {name: hashlib.sha256(raw).hexdigest() for name, raw in overrides.items()},
               "public_source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
               "runtime_sha256": hashlib.sha256(payload.getvalue()).hexdigest(),
               "python_runtime": "Pyodide 314.0.7", "solver": "or-tools-wasm 0.9.1",
               "payload_files": included, "private_files_included": False,
               "static_files": {p.relative_to(PUBLIC).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                                for p in sorted(PUBLIC.rglob("*")) if p.is_file() and p.name != "build-info.json"}}
-    (PUBLIC / "build-info.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), "utf-8")
+    (PUBLIC / "build-info.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), "utf-8", newline="\n")
     print(json.dumps({k: v for k, v in report.items() if k not in ("payload_files", "static_files")}, ensure_ascii=False))
 
 
