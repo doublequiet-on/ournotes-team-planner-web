@@ -8,3 +8,6 @@ __pycache__/
 .env
 .env.*
 !.env.example
+workbench/runtime/
+workbench/web/card-images/
+workbench/local-state/

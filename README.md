@@ -1,45 +1,37 @@
-# Our Notes 配队网页版
+# Our Notes 配队工作台
 
-[打开网页版](https://doublequiet-on.github.io/ournotes-team-planner-web/) · [使用说明](guides/USAGE.md) · [开发入门](guides/DEVELOPMENT.md)
+[打开网页版](https://doublequiet-on.github.io/ournotes-team-planner-web/) · [使用说明](guides/USAGE.md) · [暂停与交接](guides/PAUSED.md)
 
-在浏览器中录入 BanG Dream! Our Notes 日服卡库，计算普通演出与挑战演出的队伍、活动 PT、商店 PT 和不同歌曲前三名。Python 公式与完整搜索在访问者的设备上运行，网站只提供静态文件，适合 GitHub Pages，无需维护计算服务器。
+**v0.3.0 为本轮最后一个版本，发布后暂停开发。** 数据固定在日服 **2026-10-01**、活动 ID 1；不会自动跟进新卡、新活动或游戏规则。
 
-当前网页版 **v0.2.0**，计分模型固定为公开源码 **v0.2.5**，数据快照 **2026-10-01**。初次使用为空白卡库，可导入本地版导出的 JSON。个人卡库和续算进度保存在同一网址、同一浏览器；换设备或清理网站数据之前请导出备份。
+录入自己的成员、留影和实际养成，先设置属性、稀有度、乐队、角色范围，再寻找最多 15 套不同卡组。可指定必带卡、队长、成员与留影绑定，以及活动／商店加成底线。支持指定队伍直接验算、独立升级规划档案、队伍对比、图片和 JSON 导出。
 
-**v0.2.0 减少多歌曲和大卡池的重复准备、建模与 AP 精算。** 保留完整候选、两个收益目标及四组歌曲 Top-3，增加分段诊断和有界缓存。请刷新网页重新计算；个人卡库可继续使用。[优化范围与验证](guides/PERFORMANCE.md)。普通与挑战继续分别计算综合力，[模式规则](guides/POWER-MODES.md)不变。
+推荐同时考虑综合力、Live 技能与留影条件。综合潜力是均匀覆盖的参考指标，**不代表任意歌曲的最高分**；多方向配队轮流优化各指标，也不是统一指标下的前 15 名。已移除歌曲选择、推荐歌曲和资源循环收益计算，歌曲与谱面请到 [bdon](https://bdon.moe/tools/chart-data) 查询。
 
-![使用合成养成完成 AP 计算的网页示例](guides/images/preview.png)
+![配队配置](guides/images/workbench.png)
 
-目前按固定活动 ID 1、普通单人自由演出、撃奏关闭计算。AP 使用模型的最不利技能顺序评级；推荐结果属于模型估算。普通与挑战阶段各使用固定队伍和歌曲，完整比较资源循环，不计算逐场混队或混歌。新活动、撃奏和未验证技能需要先补充模型与证据。
+计算在访问者的浏览器中完成，不上传个人卡库，不需要计算服务器。原网页版卡库首次打开会迁移，原记录保留；换设备或清理网站数据前请导出。计算没有候选数量或求解秒数上限，耗时取决于设备和条件，可以取消并恢复已完成的候选；只有完成证明的队伍进入缓存。
+
+模型范围：AP/PERFECT、正生命值、辅助与撃奏关闭。普通演出不计活动参数加成，挑战计入。基础综合力不包含乐曲属性和标签；可手动指定属性匹配场景，但不选择歌曲。
 
 ## 本地构建
 
-需要 Node.js 22 或更新版本、Python 3.12 和 Git。本次验证使用 Node.js 24；使用网页的人无需安装开发工具。
+需要 Node.js 22+、Python 3.12；测试需要 `requirements-test.txt` 中的原生 OR-Tools。
 
 ```powershell
-git clone https://github.com/doublequiet-on/ournotes-team-planner-web.git
-cd ournotes-team-planner-web/browser
+cd browser
 npx pnpm@11.19.0 install --frozen-lockfile
 npx pnpm@11.19.0 build
 python -B tests/preview_server.py
 ```
 
-通过 [本机预览](http://127.0.0.1:8877/ournotes-planner/) 打开。必须通过 HTTP/HTTPS 访问；首次打开可能自动刷新一次。建议使用电脑的近期 Chrome 或 Edge。首次下载运行组件需要网络，本版不承诺完整离线运行。
+打开 [本机预览](http://127.0.0.1:8877/ournotes-planner/)。首次下载组件较大，建议近期 Chrome／Edge；不承诺完整离线或真实手机设备性能。
 
-## 源码与说明
+- [开发与源码入口](guides/DEVELOPMENT.md)
+- [算法、Worker 和缓存](guides/ARCHITECTURE.md)
+- [验证方法](guides/VALIDATION.md)
+- [发布及回退](guides/DEPLOYMENT.md)
+- [数据来源](guides/DATA.md)、[模式规则](guides/POWER-MODES.md)、[历史性能优化](guides/PERFORMANCE.md)
+- [变更记录](CHANGELOG.md)、[第三方说明](THIRD-PARTY-NOTICES.txt)、[许可证](LICENSE)
 
-| 内容 | 入口 |
-| --- | --- |
-| 录入、计算、保存与续算 | [使用说明](guides/USAGE.md) |
-| 独立构建、修改源码、测试 | [开发说明](guides/DEVELOPMENT.md) |
-| 浏览器 Worker、模型桥接与存储 | [架构说明](guides/ARCHITECTURE.md) |
-| 数据来源、固定基准与升级步骤 | [数据说明](guides/DATA.md) |
-| GitHub Pages 发布、更新与回退 | [部署说明](guides/DEPLOYMENT.md) |
-| 验收命令与证据边界 | [验证说明](guides/VALIDATION.md) |
-| 加载、保存、性能问题 | [故障排查](guides/TROUBLESHOOTING.md) |
-| 提交修改 | [贡献说明](CONTRIBUTING.md) |
-| 版本变化 | [变更记录](CHANGELOG.md) |
-
-`browser/` 包含可编辑的网页与 Python/WASM 适配源码、锁定依赖、测试和公开基准 ZIP。`docs/` 是已经构建的 Pages 网站，不需要服务器程序。开发指南提供展开基准 Python 公式与研究数据的命令，构建不依赖作者机器上的其他目录。
-
-本项目新增代码采用 [MIT 许可证](LICENSE)。原模型、转换工具和运行组件保留各自许可证；游戏数据、卡图和谱面不由本项目授予版权许可。来源与完整说明见 [第三方说明](THIRD-PARTY-NOTICES.txt)、[许可证目录](licenses/) 和 [数据说明](guides/DATA.md)。这是非官方工具。
+`workbench/` 是新界面和配队算法源码，`core/` 保留计分与养成模型，`browser/` 是 WASM 适配和构建，`docs/` 是生成的 Pages 网站。非官方工具；游戏数据与图片不由本项目授予版权许可。
