@@ -1,45 +1,15 @@
-# 验证说明
+# 验证说明 · v0.3.0
 
-验收使用公开 v0.2.5 基准和明确的合成养成，在真正的 Pyodide/OR-Tools WASM 中运行优化层，再与未修改的原生基准比较。`tools/test_core.py` 另验证新核心的区间、缓存、CP 摘要和现有搜索回归。没有原玩家卡库或结算截图依赖。
+执行 `python -B tools/run_checks.py`。输出在被 Git 忽略的 `work/validation/`，全部输入为合成养成。
 
-## 运行验收
+- `tools/test_core.py`：原核心回归，保留计分、技能、缓存与优化基础。
+- `tools/test_workbench.py`：七类目标与小池枚举对照；每个剩余卡组的最优目标、条件队长、固定队长／绑定、加成底线及无解；固定队伍直接验算；筛选、缓存指纹与取消续算。生成独立原生对照结果。
+- `check_power_modes.py`：普通／挑战参数加成区别与详细综合力计算一致。
+- `check_workbench.cjs`：真实浏览器产出 15 套、原生与 WASM 目标相同、条件合法、复制／JSON／图片导出、桌面及 768／390 像素布局、指定队伍验算、无解、完整卡池取消、完整候选续算、多标签页、旧卡库迁移和升级规划档案。
+- `check_int64.cjs`：WASM 对大于 JavaScript 安全整数的数值保持精确。
+- `tools/check_build.py`：两次生成哈希一致、删除过期 public 文件。
+- `tools/verify_release.py`：运行包和可编辑源码逐字节一致、静态清单与许可证完整、不包含私人状态路径。
 
-先按开发说明完成 `browser/` 的依赖安装与构建。在仓库根目录创建原生参考环境：
+历史 `check_browser.cjs`、`check_lifecycle.cjs` 等旧歌曲界面验收保留作历史参考，不纳入新版 UI 验收。当前 CI 使用上面新工作台流程，不能用旧报告证明新界面已通过。
 
-```powershell
-python -m venv .venv
-.venv/Scripts/python -m pip install -r requirements-test.txt
-.venv/Scripts/python -B tools/run_checks.py
-```
-
-Windows 默认使用已安装的 Edge。Linux/macOS 默认使用 Playwright 自带 Chromium，先在 `browser/` 执行 `npx pnpm@11.19.0 exec playwright install chromium`；Linux CI 可以使用 `install --with-deps chromium`。使用其他已安装浏览器可设置 `OURNOTES_BROWSER_CHANNEL=chrome` 或 `msedge`。已有 Playwright 模块可由 `OURNOTES_PLAYWRIGHT_MODULE` 指定，正常安装本仓库依赖无需设置。
-
-Linux/macOS 的原生环境命令是 `.venv/bin/python`。浏览器测试需要可启动浏览器的环境，不能用 Python 单测替代。
-
-完整验收需要数分钟。性能对照另见 [优化与测量](PERFORMANCE.md)。`run_checks.py` 自动生成原生结果，启动无计算 API/无隔离头的本机静态预览，顺序执行浏览器验收，最后停止预览。生成数据、截图和结果全部写到 `work/validation/`，不进入源码提交或静态网站。
-
-## 覆盖范围
-
-| 检查 | 验证内容 |
-| --- | --- |
-| `check_browser.cjs` | Pages 子目录、首次刷新与隔离、空白卡库、AP、85 首普通 EXPERT 跳过、CP-SAT AP、混合与取整预算、2004 判定目标技能、收益与四组歌曲 Top-3 |
-| `check_lifecycle.cjs` | 取消不展示部分最优、刷新后卡库与证明保留、恢复复用步骤、四组不同歌曲 Top-3、多标签页计算锁、全 63 成员/64 Snap 跳过卡池 |
-| `check_int64.cjs` | WASM 最优解 `9007199254740997` 不因 JavaScript 精度而舍入 |
-| `check_review.cjs` | 旧标签页覆盖保护、损坏缓存恢复、Worker 退出及时报错和导出保留 |
-| `check_images.cjs` | 模拟卡图临时 503，有限重试后恢复显示 |
-| `check_power_modes.py` | 游戏帮助中的挑战专属参数规则、同队同曲、模式切换、详细/快速计算及两条搜索路径 |
-| `check_score_oracles.py` | 浏览器所选队伍按实际模式重新计算综合力，再核对报告得分 |
-| `verify_release.py` | 固定源 SHA-256、源码/网站版本一致、公开资源清单与哈希、完整运行归档、无个人状态路径 |
-| `check_build.py` | 相同源码生成相同运行 ZIP，误放在生成 public 目录的文件不会进入下一次构建 |
-
-浏览器测试比较目标收益、另一种收益、剩余 CP、普通/挑战综合力、歌曲 ID 和 Top-3，并要求最优证明。报告综合力与得分还由原生公式复算。布局覆盖 1440、768、390 像素和全部 127 张卡图。两种运行环境一致不能排除共同的公式错误，因此活动参数的模式限制另有规则回归，见 [模式修复说明](POWER-MODES.md)。
-
-测试阻断其他来源请求，确认计算在网站自身静态文件下完成。开发机器防护软件注入的请求单独记录，不混同于应用请求；这不是系统级网络抓包证明。
-
-## 证据边界
-
-桌面浏览器的真实计算通过，不等于手机实机、QQ 内置浏览器或所有 AP 全卡池都可以快速完成。全卡池性能用的是合成养成与跳过方式。没有完成搜索时，程序不会把部分结果作为全局最优展示。
-
-CI 验证源码；本机静态预览验证运行；正式 Pages 验证部署路径与实际资源。这三项需要分别记录。网页首次下载需要网络，本版不承诺完整离线运行。新活动和撃奏仍需独立机制验证。
-
-本次修复前已分别复现旧页覆盖、损坏缓存阻断加载、死 Worker RPC 超时，修复后以上回归检查通过。公开发布的结果摘要附在 Release，不附带测试输入和浏览器下载文件。
+浏览器验收不等于真实手机游戏实测，不证明任意歌曲最优，也不验证撃奏、新活动或未来快照。发布后另行检查正式 HTTPS 站点的版本、首次隔离初始化、导入、求解与导出。CI 成功和 Pages 部署成功是两个步骤。

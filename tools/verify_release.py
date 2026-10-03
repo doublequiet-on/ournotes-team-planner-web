@@ -39,6 +39,9 @@ def verify(site):
         for name in ("browser_runtime.py", "cp_model.py"):
             if payload.read(name) != (ROOT / "browser" / name).read_bytes():
                 raise ValueError("Runtime contains an outdated browser adapter")
+        for name in ('team_candidates.py', 'sample.py'):
+            if payload.read(name) != (ROOT / 'workbench' / name).read_bytes():
+                raise ValueError('Runtime contains an outdated workbench source')
         for name, raw in sources().items():
             if (payload.read(name) != raw or info["core_overrides"].get(name) != hashlib.sha256(raw).hexdigest()):
                 raise ValueError(f"Runtime contains an outdated optimized source: {name}")

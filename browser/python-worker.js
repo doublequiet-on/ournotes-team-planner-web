@@ -65,13 +65,14 @@ self.onmessage = async event => {
   try {
     await ready;
     if (message.method === 'restore-state') {
+      pyodide.runPython('browser_runtime.close_cache()');
       try {pyodide.FS.unlink('/state/search-v1.sqlite3');} catch {}
       if (message.stored) pyodide.FS.writeFile('/state/search-v1.sqlite3', new Uint8Array(message.stored));
       const cacheReset = pyodide.runPython('browser_runtime.restore_cache()');
       self.postMessage({type: 'reply', id: message.id, value: {cacheReset}});
       return;
     }
-    if (message.cancel) cancel = new Int32Array(message.cancel);
+    cancel = message.cancel ? new Int32Array(message.cancel) : null;
     if (message.method === 'optimize') {
       started = performance.now(); lastProgress = {};
       persistStats = {snapshots: 0, snapshot_bytes: 0, snapshot_copy_ms: 0};

@@ -12,6 +12,7 @@ INT_MIN = -(1 << 63)
 INT_MAX = (1 << 63) - 1
 OPTIMAL = 4
 FEASIBLE = 2
+INFEASIBLE = 3
 
 
 class LinearExpr:
@@ -94,6 +95,10 @@ class Var(LinearExpr):
         super().__init__({index: 1})
         self.index = index
 
+    def Not(self):
+        flag = SimpleNamespace(index=-self.index - 1)
+        return flag
+
 
 class Bound:
     def __init__(self, expression, domain):
@@ -109,7 +114,7 @@ class Constraint:
         self.proto = proto
 
     def only_enforce_if(self, flags):
-        if isinstance(flags, Var):
+        if hasattr(flags, 'index'):
             flags = [flags]
         self.proto.setdefault("enforcementLiteral", []).extend(flag.index for flag in flags)
         return self
@@ -118,6 +123,13 @@ class Constraint:
 class CpModel:
     def __init__(self):
         self.model = {"variables": [], "constraints": []}
+
+    @property
+    def proto(self):
+        return SimpleNamespace(variables=self.model['variables'])
+
+    def get_int_var_from_proto_index(self, index):
+        return Var(index)
 
     def new_int_var(self, low, high, name):
         if type(low) is not int or type(high) is not int or not INT_MIN <= low <= high <= INT_MAX:
@@ -204,7 +216,7 @@ class CpSolver:
         if response.get("error"):
             raise p.InputError(response["error"])
         self.solution = [int(v) for v in response.get("solution", [])]
-        if response["status"] not in (OPTIMAL, FEASIBLE):
+        if response["status"] not in (OPTIMAL, FEASIBLE, INFEASIBLE):
             raise p.InputError(f"浏览器求解未完成（状态 {response['status']}）：{response.get('solutionInfo', '')}")
         return response["status"]
 

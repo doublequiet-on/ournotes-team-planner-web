@@ -1,29 +1,23 @@
-# 架构说明
+# v0.3.0 架构与配队算法
 
-网站提供 HTML、JavaScript、卡图、公开研究数据、Pyodide 和 OR-Tools WASM。浏览器载入后，主线程管理界面；Python Worker 执行原公式和完整搜索；另一求解 Worker 运行 CP-SAT。没有计算服务器、云求解账号或远程 `/api` 接口。
+`workbench/web/` → `browser/main.js` 虚拟 API → Python Worker → `team_candidates.py` → `cp_model.py` → OR-Tools WASM Worker。网站只托管静态文件，输入不发到计算后台。桌面原生入口是 `workbench/app.py`，与浏览器共用配队模块。
 
-```mermaid
-flowchart LR
-  Static[GitHub Pages 静态文件] --> UI[浏览器主线程与界面]
-  UI <--> Python[Python Worker / Pyodide]
-  Python --> Bridge[SharedArrayBuffer 求解桥接]
-  Bridge <--> Solver[求解 Worker / OR-Tools WASM]
-  UI <--> Inventory[localStorage 个人卡库]
-  Python --> Snapshot[已提交 SQLite 快照]
-  Snapshot --> UI
-  UI <--> IDB[IndexedDB 续算记录]
-```
+## 目标与约束
 
-原界面的 `/api/bootstrap`、`/api/check-growth`、`/api/optimize` 和任务查询会被 `window.plannerFetch` 转成浏览器内 RPC。它们不会向 Pages 发送 POST 请求。任务进度与取消由主线程管理，Python 的同步搜索不会阻塞界面。
+CP-SAT 同时选择五名不同角色的成员、五张不同留影、成员与留影的一对一绑定及队长。输入约束包含候选筛选、必带、固定队长、固定绑定、纯属性、活动／商店加成底线。实际养成先验证，筛选掉的候选不要求补齐。
 
-求解模型经 CP-SAT 适配器序列化，再由 Protobuf 编码。64 位整数系数、范围和解始终使用十进制字符串和 Long；禁止在传输中转成 JavaScript 浮点数。求解器先校验模型，只有 `OPTIMAL` 可以作为最优证明，`FEASIBLE` 不进入最优结果。网页版使用单个求解线程，未设置超时近似或卡池截断。
+每对成员与留影的技能积分由现有 ON 技能合同计算，包含增分、PERFECT 目标、条件与延长；未支持的效果拒绝计算，不按零效果处理。综合力逐项沿用 ON 模型，挑战模式才计活动参数加成。条件型队长先采用有效上界，找到候选后用真实队伍复核，必要时加入条件事实重新求解。
 
-Python 在已提交步骤后发送 SQLite 快照，主线程排队将其写入 IndexedDB 事务。关闭前未完成的写入可能丢失，当前求解也会中断；下次读取最后成功保存的完整记录。存储空间不足时显示提示，计算结果仍可导出。
+设综合力 P、各技能的增分比例乘有效持续时间之和 A，参考窗口 T 取 60／120／180 秒，潜力为 `P × (1 + A/T)`。内部使用原始整数单位，乘积以 int64 字符串经 protobuf 桥接，不经 JavaScript 浮点数取整。页面数值是展示用近似。
 
-搜索缓存指纹包含固定模型与数据、影响结果的个人输入、浏览器 Python 适配器内容和求解版本。改变条件或适配器后不能复用旧的最优证明。损坏快照在 Worker 内被跳过，个人卡库独立保存；下一次计算写入新的有效快照。
+短窗、120 秒潜力、长窗、纯综合力、技能积分和两类活动加成共七个目标。加成方向使用字典序：加成最大后再最大化 120 秒潜力。多方向结果轮流使用五个目标；每得到一个完整方案，就排除其成员集合＋留影集合。并列方案允许不同，验证比较每一步目标值及合法性。
 
-Web Locks 限制同一项目路径同时只有一个标签页写搜索缓存。每次开始前重新读取最新 IndexedDB 快照。个人卡库另有保存值比较和 `storage` 事件保护；旧页保留导出，不能覆盖其他页的新数据。
+合法初始解只作提示，不删除候选。没有人工候选数或搜索秒数上限；每步只接受 OPTIMAL，INFEASIBLE 表示剩余候选不存在。不能把中途 FEASIBLE 当已证明结果。模型有 int64 表达范围与设备内存限制，不能承诺任意规模瞬间完成。
 
-Pages 无法由项目设置自定义隔离头，因此 Service Worker 只对其项目路径的同源静态响应加入 COOP/COEP/CORP。首次页面受控后刷新一次，启用 SharedArrayBuffer。它不缓存全部资源，本项目不据此承诺离线运行。不同项目路径使用独立的卡库、续算库、刷新标记和计算锁。
+## 保存与生命周期
 
-两个 Worker 的源码与原生基准不同，跨环境验收不可省略。Python Worker 异常退出会拒绝等待中的和后续 RPC，提示刷新；求解 Worker 异常会释放桥接等待并报告失败。已导出的卡库和成功保存的记录不依赖正在运行的 Worker。
+每个完整候选在 SQLite 原子提交后传回主线程写入 IndexedDB；取消终止 WASM 并设置共享标志，不发布半成品。浏览器重新打开后按输入指纹复用完整候选。指纹覆盖规范化条件、养成、数据／核心、配队源码与浏览器桥接源码。原网页搜索缓存与新队伍缓存使用不同表。
+
+多标签页计算用 Web Locks 互斥；卡库另存 localStorage，写入前比较旧值并响应 storage 事件，避免旧标签覆盖新输入。新档案键含网站路径；首次迁移读取旧 `ournotes-browser-planner-v1-profile:<scope>`，保留原记录。结果还要匹配完整输入及引擎签名才能恢复。
+
+GitHub Pages 通过 Service Worker 添加隔离头，SharedArrayBuffer 用于 Python 与 WASM 同步求解。首次访问可能刷新一次。取消期间 UI 保持响应；切后台、关闭页面和设备内存压力仍会影响执行。

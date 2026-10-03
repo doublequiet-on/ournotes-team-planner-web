@@ -1,7 +1,7 @@
 {
-  "browser_version": "0.2.0",
+  "browser_version": "0.3.0",
   "core_version": "0.2.5",
-  "optimizer_revision": 1,
+  "optimizer_revision": 2,
   "core_overrides": {
     "planner_core.py": "8b8455d70ea904be6a0dfe692375fab154e0fa1d517dd56c2fd104b051c5149c",
     "solver_search.py": "4f315013b758b1f808d74484a01426f69c5c931aca7e9b8f086cea233b8de2a2",
@@ -13,7 +13,7 @@
     "research/manual_skill_contract.py": "5a998694b7be78ced62ebc88e357dee1708c17f1f87d5a8f24c940a615c5ea06"
   },
   "public_source_sha256": "396a5b670f8e15f7ce3e5582ca9ed114658d40de801f9d7233351027888ca914",
-  "runtime_sha256": "03aa30c3b67f44ef473128d9d8e94f560309cccbf4f87b2299c1648b21ea8ff0",
+  "runtime_sha256": "eda11ee2941fa3588c0e9e9da3cc974be75d54522603ca0bb907435d90614b81",
   "python_runtime": "Pyodide 314.0.7",
   "solver": "or-tools-wasm 0.9.1",
   "payload_files": [
@@ -490,6 +490,8 @@
     "solver_search.py",
     "browser_runtime.py",
     "cp_model.py",
+    "team_candidates.py",
+    "sample.py",
     "score_intervals.py",
     "performance_trace.py"
   ],
@@ -624,7 +626,6 @@
     "card-images/snaps-7.webp": "df848fc6ac5015e6bd342b109ea74bf64772300b9b46028a730f13a203573c66",
     "card-images/snaps-8.webp": "53683da4db4e2405eabf9ccb97c998e4d9464adcdf1466a1b2d3427f859efbeb",
     "card-images/snaps-9.webp": "ce87b42a4c2cd28414a97b5accac5108ef4c156eba3e118434fbdaaa99f6bb5e",
-    "favicon.svg": "87a8b07449e9fe84609c2e0f99fe44e4bdcb699a6ed2ad833fd05b290060f64d",
     "licenses/CPython-LICENSE.txt": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
     "licenses/Emscripten-LICENSE.txt": "620a78084fc7ca97c0b5dea9abf891f3ffcadfdbf305276f099c9c4e12fc1d86",
     "licenses/long-LICENSE.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
@@ -636,7 +637,7 @@
     "licenses/protobufjs-LICENSE.txt": "49d6a1c9a623784c61c6cb70f773f3457faceb1914a13c8560a9823b7631950c",
     "licenses/Pyodide-LICENSE.txt": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5",
     "licenses/source_manifest.json": "8122385e57c61cde89d53f2772c84fbb1f57274a42423443de765e7fb064ea5f",
-    "planner-runtime.zip": "03aa30c3b67f44ef473128d9d8e94f560309cccbf4f87b2299c1648b21ea8ff0",
+    "planner-runtime.zip": "eda11ee2941fa3588c0e9e9da3cc974be75d54522603ca0bb907435d90614b81",
     "service-worker.js": "7f00486cd230e58a56f3c2609288811c42344cc18b6aebb40bb14e6010b429fd",
     "THIRD-PARTY-NOTICES.txt": "ff69de836664f5dee3faa37e78124ac3b965792ba78e58c6ba69efb0ad6835c4",
     "vendor/pyodide/pyodide-lock.json": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010",

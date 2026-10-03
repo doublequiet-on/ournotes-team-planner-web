@@ -20,7 +20,8 @@ def run(command):
 
 
 run([sys.executable, "-B", str(ROOT / "tools/test_core.py")])
-for name in ("check_power_modes.py", "make_fixtures.py", "make_extra_fixtures.py", "make_judgement_fixture.py"):
+run([sys.executable, '-B', str(ROOT / 'tools/test_workbench.py')])
+for name in ("check_power_modes.py",):
     run([sys.executable, "-B", str(ROOT / "browser/tests" / name), str(dest)])
 preview = subprocess.Popen([sys.executable, "-B", str(ROOT / "browser/tests/preview_server.py"), "--port", str(args.port)],
     cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -29,18 +30,16 @@ try:
     if not line.startswith("Static preview:"):
         raise RuntimeError("Static preview did not start: " + preview.stderr.read())
     print(line.strip(), flush=True)
-    for name in ("check_browser.cjs", "check_lifecycle.cjs", "check_int64.cjs", "check_review.cjs", "check_images.cjs"):
+    for name in ("check_workbench.cjs", "check_int64.cjs"):
         run(["node", str(ROOT / "browser/tests" / name), str(dest)])
-    run([sys.executable, "-B", str(ROOT / "browser/tests/check_score_oracles.py"), str(dest)])
     reports = {name: json.loads((dest / f"{name}-report.json").read_text("utf-8"))
-               for name in ("browser", "lifecycle", "int64", "review", "images", "score-oracle", "power-modes")}
+               for name in ("workbench", "int64", "power-modes")}
     if not all(report["passed"] for report in reports.values()):
         raise RuntimeError("One or more checks failed")
     summary = {"passed": True, "browser_version": json.loads((ROOT / "browser/package.json").read_text("utf-8"))["version"],
-               "core_version": reports["score-oracle"]["core_version"],
-               "browser_checks": reports["browser"]["reports"], "lifecycle_checks": reports["lifecycle"]["reports"],
-               "review_checks": reports["review"]["reports"], "image_checks": reports["images"]["reports"],
-               "int64": reports["int64"], "score_oracle": reports["score-oracle"],
+               "core_version": '0.2.5',
+               "browser_checks": reports["workbench"]["reports"],
+               "int64": reports["int64"],
                "power_modes": reports["power-modes"],
                "real_mobile_device_verified": False}
     (dest / "validation-summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), "utf-8")

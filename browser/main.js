@@ -178,6 +178,10 @@ async function start() {
     const body = options.body ? JSON.parse(options.body) : {};
     if (path === '/api/bootstrap') return rpc('bootstrap');
     if (path === '/api/check-growth') return rpc('check-growth', body);
+    if (path === '/api/evaluate') {
+      if (job?.status === 'running') throw new Error('请先完成或取消当前计算。');
+      return rpc('evaluate', body);
+    }
     if (path === '/api/optimize') return optimize(body);
     if (path === `/api/jobs/${job?.id}/cancel`) {
       if (sharedCancel) Atomics.store(new Int32Array(sharedCancel), 0, 1);

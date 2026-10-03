@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; worker-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self';"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Our Notes 配队工作台 · 浏览器计算</title>  <script type="module" crossorigin src="./assets/index-68WVqAPB.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CJP2Wi75.css">
-</head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Our Notes 配队工作台 · 本地测试</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
 <body>
 <aside class="sidebar">
   <a class="brand" href="#plan"><span class="brand-icon">ON</span><span><strong>Our Notes 配队</strong><small>TEAM PLANNER <span id="version"></span></small></span></a>
@@ -16,10 +14,10 @@
   <div class="sidebar-bottom"><div class="nav-label">运行状态</div><div id="runStatus" role="status"><span class="status-dot"></span>就绪</div><div id="sidePool" class="muted tiny"></div><a class="sidebar-link" href="https://bdon.moe/tools/chart-data" target="_blank" rel="noreferrer">bdon 乐曲与谱面 ↗</a><button id="calculate" class="primary full">开始计算 <span>→</span></button></div>
 </aside>
 <div class="workspace">
-  <header class="topbar"><div>工作台 <span class="slash">/</span> <strong id="pageTitle">配队配置</strong></div><span class="local-chip"><span class="status-dot"></span>浏览器计算 · 日服数据</span></header>
+  <header class="topbar"><div>工作台 <span class="slash">/</span> <strong id="pageTitle">配队配置</strong></div><span class="local-chip"><span class="status-dot"></span>本地测试 · 日服数据</span></header>
   <div class="profilebar"><label>当前档案 <select id="profileSelect" aria-label="当前档案"></select></label><span id="profileBadge" class="badge"></span><span id="profileName" class="sr-only"></span><label class="text-button" for="import">↓ 导入卡库<input id="import" type="file" accept=".json,application/json" hidden></label><button id="export" class="text-button">↑ 导出</button><button id="profileManage" class="text-button push-right">管理档案 ↗</button></div>
   <main class="main-content">
-    <div id="browserLoading" class="notice" role="status">正在准备计算组件…</div><div id="loadError" class="notice error" hidden></div><div id="message" class="notice" hidden role="status"></div>
+    <div id="loadError" class="notice error" hidden></div><div id="message" class="notice" hidden role="status"></div>
     <fieldset id="inputArea">
     <section id="plan" class="tab-page">
       <div class="page-heading"><div><div class="eyebrow">OUR NOTES / 队伍推荐</div><h1>配队配置</h1><p>选好条件，寻找最多 15 套成员与留影搭配。</p></div><button id="editInventory" class="secondary">编辑我的卡牌 ↗</button></div>
@@ -52,11 +50,11 @@
       <div id="results" hidden><div class="panel result-toolbar"><div class="panel-head"><div><h2 id="resultTitle"></h2><p id="resultHint" class="tiny muted"></p></div><button id="exportResult" class="secondary">导出结果</button></div><div class="result-controls"><div id="resultFilters" class="filter-chips" role="group" aria-label="结果方向筛选"></div><label>排序<select id="resultSort"><option value="recommended">推荐顺序</option><option value="potential">综合潜力</option><option value="power">综合力</option><option value="skill">技能积分</option><option value="event">活动加成</option><option value="shop">商店加成</option></select></label></div><p class="tiny muted">潜力列统一使用 120 秒参考，便于同条件比较；候选编号不是全歌曲得分排名。最多选择 3 套加入对比。</p></div><div id="comparison" class="panel" hidden></div><div id="teamList" class="team-list"></div></div>
     </section>
     <section id="archive" class="tab-page" hidden><div class="page-heading"><div><div class="eyebrow">PROFILES & DATA</div><h1>档案与说明</h1><p>真实养成与升级规划分开保存，原有卡库可以继续导入。</p></div><button id="new" class="primary">＋ 新建档案</button></div><div class="archive-grid"><div class="panel"><div class="panel-head"><h2>我的档案</h2><span id="archiveCount" class="tiny muted"></span></div><div id="archiveList"></div></div><div class="panel"><h2>当前档案</h2><div id="profileStats" class="stats-row"></div><div class="config-row two-cols"><label>档案名称<input id="archiveName" maxlength="60"></label><label>档案用途<select id="profileKind"><option value="actual">实际养成</option><option value="plan">升级规划</option></select></label></div><div class="actions"><button id="copyProfile" class="secondary">复制为升级规划</button><button id="exportAll" class="secondary">备份全部档案</button><button id="deleteProfile" class="text-button danger">删除当前档案</button></div><p class="tiny muted">修改规划档案不会改动原档案。切换档案可查看各自最近一次有效结果。</p><div class="divider"></div><h3>快速体验</h3><p class="tiny muted">合成测试卡库包含已填写的示例养成，不代表你的账号。</p><button id="sample" class="secondary">试用合成卡库</button></div></div>
-      <section id="about" class="panel"><h2>数据与使用范围</h2><p>当前固定为 2026-10-01 日服数据快照及活动 1。计算使用 AP/PERFECT、正生命值，辅助与撃奏关闭。</p><p>推荐结合综合力、增分技能、留影延长与适用条件。最多 15 套不同成员卡 + 留影集合，各套显示队长及绑定关系。潜力为均匀覆盖参考指标，不是具体谱面分数；显示位置不是技能触发顺序。</p><p>指定队伍只验算所选成员、绑定留影和队长，可直接比较改动。普通演出不计活动参数加成，挑战演出计入；不处理普通 → CP → 挑战的资源循环收益。</p><p>卡库自动保存在本地浏览器，相同计算条件可复用完整结果；取消后再次计算可续算。换浏览器或清理网站数据前，请备份档案。本版本完成后项目暂停更新，数据不会自动更新。</p><p>操作布局参考 <a href="https://calc.krkrdkdk.cn/#activity" target="_blank" rel="noreferrer">邦邦组队计算工作台</a>。计算沿用 ON 模型；歌曲与谱面请前往 <a href="https://bdon.moe/tools/chart-data" target="_blank" rel="noreferrer">bdon 工具</a>。</p><button id="exit" hidden>退出</button></section>
+      <section id="about" class="panel"><h2>数据与使用范围</h2><p>当前固定为 2026-10-01 日服数据快照及活动 1。计算使用 AP/PERFECT、正生命值，辅助与撃奏关闭。</p><p>推荐结合综合力、增分技能、留影延长与适用条件。最多 15 套不同成员卡 + 留影集合，各套显示队长及绑定关系。潜力为均匀覆盖参考指标，不是具体谱面分数；显示位置不是技能触发顺序。</p><p>指定队伍只验算所选成员、绑定留影和队长，可直接比较改动。普通演出不计活动参数加成，挑战演出计入；不处理普通 → CP → 挑战的资源循环收益。</p><p>卡库自动保存在本地浏览器，相同计算条件可复用完整结果；取消后再次计算可续算。换浏览器或清理网站数据前，请备份档案。本版本完成后项目暂停更新，数据不会自动更新。</p><p>操作布局参考 <a href="https://calc.krkrdkdk.cn/#activity" target="_blank" rel="noreferrer">邦邦组队计算工作台</a>。计算沿用 ON 模型；歌曲与谱面请前往 <a href="https://bdon.moe/tools/chart-data" target="_blank" rel="noreferrer">bdon 工具</a>。</p><button id="exit" class="secondary">退出本地程序</button></section>
     </section>
     </fieldset>
     <section id="progressBox" class="panel progress-box" hidden role="status"><div><strong id="progressTitle">正在计算</strong><span id="progressCount"></span></div><progress id="progressBar" max="15" value="0"></progress><div class="progress-bottom"><span class="tiny muted">完整候选会保存；取消后可继续。</span><button id="cancel" class="secondary">取消计算</button></div></section>
-    <footer>Our Notes 配队工作台 · 网页版 0.3.0 · 数据快照 2026-10-01</footer>
+    <footer>Our Notes 配队工作台 · 本地版 0.3.0 · 数据快照 2026-10-01</footer>
   </main>
 </div>
 <dialog id="cardEditor"><div class="dialog-head"><h2 id="editorTitle"></h2><button data-close="cardEditor" class="icon-button" aria-label="关闭卡牌编辑">×</button></div><div id="editorBody"></div><div id="editorFields" class="config-row two-cols"></div><p id="editorHint" class="tiny muted"></p><div class="actions"><button id="saveCard" class="primary">保存养成</button><button data-close="cardEditor" class="secondary">关闭</button></div><p id="editorError" class="tiny danger" role="alert"></p></dialog>
